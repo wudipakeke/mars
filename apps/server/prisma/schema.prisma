@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model BusinessOrder {
+  id        BigInt   @id @default(autoincrement())
+  title     String   @db.VarChar(255)
+  content   String?  @db.Text
+  status    Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("business_orders")
+}
+
+model CronConfig {
+  id         BigInt   @id @default(autoincrement())
+  name       String   @db.VarChar(255)
+  cronExpr   String   @map("cron_expr") @db.VarChar(100)
+  taskType   String   @map("task_type") @db.VarChar(50)
+  taskParams String?  @map("task_params") @db.Text
+  status     Int      @default(1)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  logs CronExecutionLog[]
+
+  @@map("cron_configs")
+}
+
+model CronExecutionLog {
+  id        BigInt   @id @default(autoincrement())
+  configId  BigInt   @map("config_id")
+  startTime DateTime @map("start_time")
+  endTime   DateTime? @map("end_time")
+  status    Int?
+  errorMsg  String?  @map("error_msg") @db.Text
+  env       String   @default("dev") @db.VarChar(10)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  config CronConfig @relation(fields: [configId], references: [id])
+
+  @@map("cron_execution_logs")
+}
+
+model SyncRecord {
+  id          BigInt    @id @default(autoincrement())
+  tableName   String    @map("table_name") @db.VarChar(100)
+  lastSyncId  String?   @map("last_sync_id") @db.VarChar(255)
+  lastSyncAt  DateTime? @map("last_sync_at")
+  status      Int?
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("sync_records")
+}
+
+model BitableRecord {
+  id        BigInt   @id @default(autoincrement())
+  appToken  String   @map("app_token") @db.VarChar(100)
+  recordId  String   @map("record_id") @db.VarChar(255)
+  fields    String   @db.Text
+  syncedAt  DateTime @default(now()) @map("synced_at")
+  batchId   String?  @map("batch_id") @db.VarChar(50)
+
+  @@unique([appToken, recordId])
+  @@map("bitable_records")
+}

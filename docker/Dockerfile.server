@@ -1,0 +1,17 @@
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/server/package.json apps/server/
+COPY packages/shared/package.json packages/shared/
+RUN corepack enable && pnpm install --frozen-lockfile
+COPY . .
+RUN pnpm --filter @mars/server build
+
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=builder /app/apps/server/dist ./dist
+COPY --from=builder /app/apps/server/package.json ./
+COPY --from=builder /app/apps/server/prisma ./prisma
+COPY --from=builder /app/node_modules ./node_modules
+EXPOSE 4000
+CMD ["node", "dist/main"]
