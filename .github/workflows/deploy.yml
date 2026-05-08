@@ -30,18 +30,20 @@ jobs:
 
           echo "=== Deploy target: $TARGET ==="
 
+          COMPOSE_FILES="-f docker-compose.yml -f docker-compose.prod.yml"
+
           case "$TARGET" in
             all)
-              docker compose -f docker-compose.prod.yml build web server
-              docker compose -f docker-compose.prod.yml up -d web server
+              docker compose $COMPOSE_FILES build web server
+              docker compose $COMPOSE_FILES up -d web server
               ;;
             web)
-              docker compose -f docker-compose.prod.yml build web
-              docker compose -f docker-compose.prod.yml up -d web
+              docker compose $COMPOSE_FILES build web
+              docker compose $COMPOSE_FILES up -d web
               ;;
             server)
-              docker compose -f docker-compose.prod.yml build server
-              docker compose -f docker-compose.prod.yml up -d server
+              docker compose $COMPOSE_FILES build server
+              docker compose $COMPOSE_FILES up -d server
               ;;
           esac
 
