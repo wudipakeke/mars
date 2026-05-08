@@ -36,6 +36,9 @@ jobs:
 
           COMPOSE_FILES="-f docker-compose.yml -f docker-compose.prod.yml"
 
+          echo "=== Removing old containers ==="
+          docker rm -f mars-web mars-server 2>/dev/null || true
+
           case "$TARGET" in
             all)
               docker compose $COMPOSE_FILES build web server
