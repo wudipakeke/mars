@@ -36,6 +36,11 @@ jobs:
 
           COMPOSE_FILES="-f docker-compose.yml -f docker-compose.prod.yml"
 
+          echo "=== Releasing ports ==="
+          lsof -ti :4000 | xargs kill -15 2>/dev/null || true
+          lsof -ti :3000 | xargs kill -15 2>/dev/null || true
+          sleep 2
+
           echo "=== Removing old containers ==="
           docker rm -f mars-web mars-server 2>/dev/null || true
 
