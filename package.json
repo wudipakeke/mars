@@ -5,7 +5,19 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,json}\""
+    "format": "prettier --write \"**/*.{ts,tsx,json}\"",
+
+    "version:server:patch": "pnpm --filter @mars/server version patch --no-git-tag-version",
+    "version:server:minor": "pnpm --filter @mars/server version minor --no-git-tag-version",
+    "version:server:major": "pnpm --filter @mars/server version major --no-git-tag-version",
+
+    "version:web:patch": "pnpm --filter @mars/web version patch --no-git-tag-version",
+    "version:web:minor": "pnpm --filter @mars/web version minor --no-git-tag-version",
+    "version:web:major": "pnpm --filter @mars/web version major --no-git-tag-version",
+
+    "version:all:patch": "pnpm -r version patch --no-git-tag-version",
+    "version:all:minor": "pnpm -r version minor --no-git-tag-version",
+    "version:all:major": "pnpm -r version major --no-git-tag-version"
   },
   "devDependencies": {
     "prettier": "^3.4.0",
