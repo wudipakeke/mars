@@ -2,7 +2,8 @@ name: Deploy Mars to K3s
 
 on:
   push:
-    branches: [main]
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       target:
@@ -19,59 +20,39 @@ env:
   CLUSTER_NAME: mars-cluster
 
 jobs:
-  # ─── Job 1: 检测版本变更（仅 package.json version 变化触发发版） ───
+  # ─── Job 1: 识别发版目标 ───
   detect-version-changes:
     runs-on: self-hosted
     outputs:
-      service: ${{ steps.version.outputs.service }}
-      web: ${{ steps.version.outputs.web }}
+      service: ${{ steps.target.outputs.service }}
+      web: ${{ steps.target.outputs.web }}
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Configure git to use SSH (HTTPS blocked by firewall)
+      - name: Determine release targets
+        id: target
         run: |
-          git config --global url."git@github.com:".insteadOf "https://github.com/"
-
-      - name: Detect version changes
-        id: version
-        run: |
-          BASE_SHA="${{ github.event.before }}"
-
-          # 首次推送（无 base commit）→ 不发版
-          if [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
-            echo "service=false" >> $GITHUB_OUTPUT
-            echo "web=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          # 检查 @mars/server 版本
-          SERVER_OLD=$(git show "$BASE_SHA:apps/server/package.json" 2>/dev/null | jq -r '.version')
-          SERVER_NEW=$(jq -r '.version' apps/server/package.json 2>/dev/null)
-          if [ "$SERVER_OLD" != "$SERVER_NEW" ] && [ -n "$SERVER_NEW" ]; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # 手动触发：根据 input 决定
+            TARGET=${{ inputs.target }}
+            if [ "$TARGET" = "all" ] || [ "$TARGET" = "server" ]; then
+              echo "service=true" >> $GITHUB_OUTPUT
+            else
+              echo "service=false" >> $GITHUB_OUTPUT
+            fi
+            if [ "$TARGET" = "all" ] || [ "$TARGET" = "web" ]; then
+              echo "web=true" >> $GITHUB_OUTPUT
+            else
+              echo "web=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            # Tag 推送 → 发版全部
             echo "service=true" >> $GITHUB_OUTPUT
-            echo "Server: $SERVER_OLD → $SERVER_NEW"
-          else
-            echo "service=false" >> $GITHUB_OUTPUT
-            echo "Server unchanged: $SERVER_NEW"
-          fi
-
-          # 检查 @mars/web 版本
-          WEB_OLD=$(git show "$BASE_SHA:apps/web/package.json" 2>/dev/null | jq -r '.version')
-          WEB_NEW=$(jq -r '.version' apps/web/package.json 2>/dev/null)
-          if [ "$WEB_OLD" != "$WEB_NEW" ] && [ -n "$WEB_NEW" ]; then
             echo "web=true" >> $GITHUB_OUTPUT
-            echo "Web: $WEB_OLD → $WEB_NEW"
-          else
-            echo "web=false" >> $GITHUB_OUTPUT
-            echo "Web unchanged: $WEB_NEW"
           fi
 
       - name: Show detection result
         run: |
-          echo "service: ${{ steps.version.outputs.service }}"
-          echo "web: ${{ steps.version.outputs.web }}"
+          echo "service: ${{ steps.target.outputs.service }}"
+          echo "web: ${{ steps.target.outputs.web }}"
 
   # ─── Job 2: 发版后端（可选，与 web 并行） ───
   release-service:
