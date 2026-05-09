@@ -109,12 +109,12 @@ jobs:
       - name: Build Mars Server image
         run: |
           VERSION=${{ needs.detect-version-changes.outputs.server-version }}
-          docker build -f docker/Dockerfile.server -t mars-server:${VERSION} .
+          docker build -f docker/Dockerfile.server -t mars-server:${VERSION} -t mars-server:latest .
 
       - name: Import image to k3d
         run: |
           VERSION=${{ needs.detect-version-changes.outputs.server-version }}
-          k3d image import mars-server:${VERSION} -c ${{ env.CLUSTER_NAME }}
+          k3d image import mars-server:${VERSION} mars-server:latest -c ${{ env.CLUSTER_NAME }}
 
       - name: Rollout restart
         run: |
@@ -152,12 +152,12 @@ jobs:
       - name: Build Mars Web image
         run: |
           VERSION=${{ needs.detect-version-changes.outputs.web-version }}
-          docker build -f docker/Dockerfile.web -t mars-web:${VERSION} .
+          docker build -f docker/Dockerfile.web -t mars-web:${VERSION} -t mars-web:latest .
 
       - name: Import image to k3d
         run: |
           VERSION=${{ needs.detect-version-changes.outputs.web-version }}
-          k3d image import mars-web:${VERSION} -c ${{ env.CLUSTER_NAME }}
+          k3d image import mars-web:${VERSION} mars-web:latest -c ${{ env.CLUSTER_NAME }}
 
       - name: Rollout restart
         run: |
