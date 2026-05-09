@@ -71,10 +71,6 @@ jobs:
         run: |
           k3d image import mars-server:latest -c ${{ env.CLUSTER_NAME }}
 
-      - name: Update ConfigMap
-        run: |
-          kubectl apply -f ../k8s/mars/configmap.yaml
-
       - name: Rollout restart
         run: |
           kubectl rollout restart deployment/mars-server -n ${{ env.NAMESPACE }}
