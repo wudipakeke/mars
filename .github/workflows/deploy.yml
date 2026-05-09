@@ -203,6 +203,7 @@ jobs:
           echo "Commit: $COMMIT, Targets: $TARGETS, Result: $OVERALL"
 
       - name: Send Feishu notification
+        if: needs.release-service.result != 'skipped' || needs.release-web.result != 'skipped'
         env:
           FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
           FEISHU_WEBHOOK_SECRET: ${{ secrets.FEISHU_WEBHOOK_SECRET }}
