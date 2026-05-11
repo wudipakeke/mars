@@ -120,7 +120,7 @@ export default function CronConfigPage() {
 
   return (
     <div>
-      <h1>定时任务配置9</h1>
+      <h1>定时任务配置10</h1>
 
       {/* 错误提示 */}
       {execError && (
