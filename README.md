@@ -12,15 +12,13 @@
 
 遵循语义化版本 [SemVer](https://semver.org/)：
 
-| 版本类型 | 示例 | 说明 | npm 命令 |
-|---------|------|------|---------|
-| **patch** | `0.0.1` → `0.0.2` | 小改动、修 bug | `npm version patch` |
-| **minor** | `0.1.0` → `0.2.0` | 新增功能、小特性 | `npm version minor` |
-| **major** | `1.0.0` → `2.0.0` | 破坏性变更、大版本 | `npm version major` |
+| 版本类型 | 示例 | 说明 | 命令 |
+|---------|------|------|------|
+| **patch** | `0.0.1` → `0.0.2` | 小改动、修 bug | `pnpm release:all:patch` |
+| **minor** | `0.1.0` → `0.2.0` | 新增功能、小特性 | `pnpm release:all:minor` |
+| **major** | `1.0.0` → `2.0.0` | 破坏性变更、大版本 | `pnpm release:all:major` |
 
 ## 发布流程
-
-### 一键打版（推荐）
 
 ESLint 检查 → 打版 → 自动提交，一条命令完成：
 
@@ -32,22 +30,15 @@ pnpm release:all:major     # 大版本
 
 # ── 单独打版 ──
 pnpm release:server:patch  # 仅 server
+pnpm release:server:minor
+pnpm release:server:major
+
 pnpm release:web:patch     # 仅 web
-# 同样支持 minor / major
+pnpm release:web:minor
+pnpm release:web:major
 ```
 
-### 手动打版
-
-```bash
-# 手动打版
-pnpm version:all:patch     # server + web
-pnpm version:server:patch  # 仅 server
-pnpm version:web:patch     # 仅 web
-
-# 手动提交
-git add apps
-git commit -m "chore: bump all version (patch)"
-```
+如果 ESLint/TypeScript 检查不通过，流程会在第一步中断，不会打版和提交。
 
 ### 触发部署
 
