@@ -17,7 +17,19 @@
 
     "version:all:patch": "npm version patch --no-git-tag-version --prefix apps/server && npm version patch --no-git-tag-version --prefix apps/web",
     "version:all:minor": "npm version minor --no-git-tag-version --prefix apps/server && npm version minor --no-git-tag-version --prefix apps/web",
-    "version:all:major": "npm version major --no-git-tag-version --prefix apps/server && npm version major --no-git-tag-version --prefix apps/web"
+    "version:all:major": "npm version major --no-git-tag-version --prefix apps/server && npm version major --no-git-tag-version --prefix apps/web",
+
+    "release:all:patch": "pnpm lint && pnpm version:all:patch && git add apps && git commit -m 'chore: bump all version (patch)'",
+    "release:all:minor": "pnpm lint && pnpm version:all:minor && git add apps && git commit -m 'chore: bump all version (minor)'",
+    "release:all:major": "pnpm lint && pnpm version:all:major && git add apps && git commit -m 'chore: bump all version (major)'",
+
+    "release:server:patch": "pnpm lint && pnpm version:server:patch && git add apps/server/package.json && git commit -m 'chore: bump server version (patch)'",
+    "release:server:minor": "pnpm lint && pnpm version:server:minor && git add apps/server/package.json && git commit -m 'chore: bump server version (minor)'",
+    "release:server:major": "pnpm lint && pnpm version:server:major && git add apps/server/package.json && git commit -m 'chore: bump server version (major)'",
+
+    "release:web:patch": "pnpm lint && pnpm version:web:patch && git add apps/web/package.json && git commit -m 'chore: bump web version (patch)'",
+    "release:web:minor": "pnpm lint && pnpm version:web:minor && git add apps/web/package.json && git commit -m 'chore: bump web version (minor)'",
+    "release:web:major": "pnpm lint && pnpm version:web:major && git add apps/web/package.json && git commit -m 'chore: bump web version (major)'"
   },
   "devDependencies": {
     "prettier": "^3.4.0",
