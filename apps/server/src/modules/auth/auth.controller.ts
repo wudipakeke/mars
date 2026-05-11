@@ -10,7 +10,11 @@ export class AuthController {
   /** 获取飞书 OAuth 授权地址 */
   @Get('url')
   getAuthUrl() {
-    return { code: 0, data: { url: this.authService.getFeishuAuthUrl() }, message: 'ok' };
+    return {
+      code: 0,
+      data: { url: this.authService.getFeishuAuthUrl() },
+      message: 'ok',
+    };
   }
 
   /** 飞书登录回调：用 code 换 JWT */

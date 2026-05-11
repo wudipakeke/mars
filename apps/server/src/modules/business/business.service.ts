@@ -17,7 +17,10 @@ export class BusinessService {
     return this.prisma.businessOrder.create({ data });
   }
 
-  update(id: bigint, data: { title?: string; content?: string; status?: number }) {
+  update(
+    id: bigint,
+    data: { title?: string; content?: string; status?: number },
+  ) {
     return this.prisma.businessOrder.update({ where: { id }, data });
   }
 

@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { BusinessService } from './business.service';
 
 @Controller('business')
@@ -21,7 +30,10 @@ export class BusinessController {
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() body: { title?: string; content?: string; status?: number }) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { title?: string; content?: string; status?: number },
+  ) {
     return this.service.update(BigInt(id), body);
   }
 

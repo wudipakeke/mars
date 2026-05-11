@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../common/prisma.service';
 
 @Injectable()
@@ -13,11 +14,25 @@ export class CronConfigService {
     return this.prisma.cronConfig.findUnique({ where: { id } });
   }
 
-  create(data: { name: string; cronExpr: string; taskType: string; taskParams?: string }) {
+  create(data: {
+    name: string;
+    cronExpr: string;
+    taskType: string;
+    taskParams?: string;
+  }) {
     return this.prisma.cronConfig.create({ data });
   }
 
-  update(id: bigint, data: { name?: string; cronExpr?: string; taskType?: string; taskParams?: string; status?: number }) {
+  update(
+    id: bigint,
+    data: {
+      name?: string;
+      cronExpr?: string;
+      taskType?: string;
+      taskParams?: string;
+      status?: number;
+    },
+  ) {
     return this.prisma.cronConfig.update({ where: { id }, data });
   }
 
@@ -26,7 +41,7 @@ export class CronConfigService {
   }
 
   findLogs(configId: bigint, env?: string) {
-    const where: any = { configId };
+    const where: Prisma.CronExecutionLogWhereInput = { configId };
     if (env) where.env = env;
     return this.prisma.cronExecutionLog.findMany({
       where,
@@ -35,13 +50,15 @@ export class CronConfigService {
     });
   }
 
-  async triggerExecute(configId: number) {
+  async triggerExecute(configId: number): Promise<Record<string, unknown>> {
     const cronflowUrl = process.env.CRONFLOW_URL || 'http://localhost:4001';
-    const res = await fetch(`${cronflowUrl}/trigger/${configId}`, { method: 'POST' });
+    const res = await fetch(`${cronflowUrl}/trigger/${configId}`, {
+      method: 'POST',
+    });
     if (!res.ok) {
       const text = await res.text();
       throw new Error(`触发执行失败: ${res.status} ${text}`);
     }
-    return res.json();
+    return res.json() as Promise<Record<string, unknown>>;
   }
 }
