@@ -9,10 +9,6 @@ export class BusinessService {
     return this.prisma.businessOrder.findMany();
   }
 
-  findOne(id: bigint) {
-    return this.prisma.businessOrder.findUnique({ where: { id } });
-  }
-
   create(data: { title: string; content?: string }) {
     return this.prisma.businessOrder.create({ data });
   }

@@ -19,11 +19,6 @@ export class BusinessController {
     return this.service.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.service.findOne(BigInt(id));
-  }
-
   @Post()
   create(@Body() body: { title: string; content?: string }) {
     return this.service.create(body);

@@ -20,11 +20,6 @@ export class CronConfigController {
     return this.service.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.service.findOne(BigInt(id));
-  }
-
   @Post()
   create(
     @Body()

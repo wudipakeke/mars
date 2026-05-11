@@ -48,25 +48,3 @@ model CronExecutionLog {
   @@map("cron_execution_logs")
 }
 
-model SyncRecord {
-  id          BigInt    @id @default(autoincrement())
-  tableName   String    @map("table_name") @db.VarChar(100)
-  lastSyncId  String?   @map("last_sync_id") @db.VarChar(255)
-  lastSyncAt  DateTime? @map("last_sync_at")
-  status      Int?
-  createdAt   DateTime  @default(now()) @map("created_at")
-
-  @@map("sync_records")
-}
-
-model BitableRecord {
-  id        BigInt   @id @default(autoincrement())
-  appToken  String   @map("app_token") @db.VarChar(100)
-  recordId  String   @map("record_id") @db.VarChar(255)
-  fields    String   @db.Text
-  syncedAt  DateTime @default(now()) @map("synced_at")
-  batchId   String?  @map("batch_id") @db.VarChar(50)
-
-  @@unique([appToken, recordId])
-  @@map("bitable_records")
-}

@@ -10,10 +10,6 @@ export class CronConfigService {
     return this.prisma.cronConfig.findMany();
   }
 
-  findOne(id: bigint) {
-    return this.prisma.cronConfig.findUnique({ where: { id } });
-  }
-
   create(data: {
     name: string;
     cronExpr: string;
