@@ -9,6 +9,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const navItems = [
     { path: '/business', label: '业务管理' },
     { path: '/cron-config', label: '定时任务配置' },
+    { path: '/credit-packages', label: 'AI 点数管理' },
   ]
 
   return (

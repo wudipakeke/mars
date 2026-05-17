@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, UseGuards, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import type { Request } from 'express';
@@ -9,18 +9,18 @@ export class AuthController {
 
   /** 获取飞书 OAuth 授权地址 */
   @Get('url')
-  getAuthUrl() {
+  getAuthUrl(@Query('app') app?: string) {
     return {
       code: 0,
-      data: { url: this.authService.getFeishuAuthUrl() },
+      data: { url: this.authService.getFeishuAuthUrl(app) },
       message: 'ok',
     };
   }
 
   /** 飞书登录回调：用 code 换 JWT */
   @Post('login')
-  async login(@Body() body: { code: string }) {
-    const result = await this.authService.feishuLogin(body.code);
+  async login(@Body() body: { code: string; app?: string }) {
+    const result = await this.authService.feishuLogin(body.code, body.app);
     return { code: 0, data: result, message: 'ok' };
   }
 

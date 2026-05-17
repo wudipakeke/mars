@@ -5,12 +5,13 @@ import Layout from './components/Layout.tsx'
 import LoginPage from './pages/auth/LoginPage.tsx'
 import BusinessPage from './pages/business/BusinessPage.tsx'
 import CronConfigPage from './pages/cron-config/CronConfigPage.tsx'
+import CreditManagePage from './pages/credit/CreditManagePage.tsx'
 
 /** 根路径跳转 */
 function RootRedirect() {
   const { user, ready } = useAuth()
   if (!ready) return null
-  return <Navigate to={user ? '/business' : '/auth'} replace />
+  return <Navigate to={user ? '/credit-packages' : '/auth'} replace />
 }
 
 /** 登录守卫 */
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/auth" element={<LoginPage />} />
           <Route path="/business" element={<ProtectedRoute><BusinessPage /></ProtectedRoute>} />
           <Route path="/cron-config" element={<ProtectedRoute><CronConfigPage /></ProtectedRoute>} />
+          <Route path="/credit-packages" element={<ProtectedRoute><CreditManagePage /></ProtectedRoute>} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
