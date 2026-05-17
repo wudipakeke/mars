@@ -22,22 +22,33 @@ export class AuthService {
   /** 飞书 OAuth 授权地址 */
   getFeishuAuthUrl(app?: string): string {
     const isTerra = app === 'terra';
-    const appId = isTerra ? process.env.FEISHU_APP_ID_TERRA : process.env.FEISHU_APP_ID;
+    const appId = isTerra
+      ? process.env.FEISHU_APP_ID_TERRA
+      : process.env.FEISHU_APP_ID;
     const redirectUri = encodeURIComponent(
-      isTerra ? (process.env.FEISHU_REDIRECT_URI_TERRA || '') : (process.env.FEISHU_REDIRECT_URI || ''),
+      isTerra
+        ? process.env.FEISHU_REDIRECT_URI_TERRA || ''
+        : process.env.FEISHU_REDIRECT_URI || '',
     );
     const state = Math.random().toString(36).slice(2);
     return `https://open.feishu.cn/open-apis/authen/v1/index?redirect_uri=${redirectUri}&app_id=${appId}&state=${state}`;
   }
 
   /** 用 code 换 token，再拿 token 换用户信息 */
-  async feishuLogin(code: string, app?: string): Promise<{
+  async feishuLogin(
+    code: string,
+    app?: string,
+  ): Promise<{
     token: string;
     user: { openId: string; name: string; avatar: string };
   }> {
     const isTerra = app === 'terra';
-    const appId = isTerra ? process.env.FEISHU_APP_ID_TERRA : process.env.FEISHU_APP_ID;
-    const appSecret = isTerra ? process.env.FEISHU_APP_SECRET_TERRA : process.env.FEISHU_APP_SECRET;
+    const appId = isTerra
+      ? process.env.FEISHU_APP_ID_TERRA
+      : process.env.FEISHU_APP_ID;
+    const appSecret = isTerra
+      ? process.env.FEISHU_APP_SECRET_TERRA
+      : process.env.FEISHU_APP_SECRET;
 
     // 1. 换取 access_token
     const tokenRes = await fetch(
