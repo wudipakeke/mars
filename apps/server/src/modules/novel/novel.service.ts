@@ -19,13 +19,26 @@ export class NovelService {
     });
   }
 
-  create(openId: string, data: { title: string; genre?: string; description?: string }) {
+  create(
+    openId: string,
+    data: { title: string; genre?: string; description?: string },
+  ) {
     return this.prisma.novel.create({
       data: { openId, ...data },
     });
   }
 
-  update(id: bigint, openId: string, data: { title?: string; genre?: string; description?: string; wordCount?: number; status?: number }) {
+  update(
+    id: bigint,
+    openId: string,
+    data: {
+      title?: string;
+      genre?: string;
+      description?: string;
+      wordCount?: number;
+      status?: number;
+    },
+  ) {
     return this.prisma.novel.update({
       where: { id },
       data,
@@ -44,13 +57,19 @@ export class NovelService {
     });
   }
 
-  createChapter(novelId: bigint, data: { title: string; chapterOrder: number }) {
+  createChapter(
+    novelId: bigint,
+    data: { title: string; chapterOrder: number },
+  ) {
     return this.prisma.novelChapter.create({
       data: { novelId, ...data },
     });
   }
 
-  updateChapter(id: bigint, data: { title?: string; wordCount?: number; status?: number }) {
+  updateChapter(
+    id: bigint,
+    data: { title?: string; wordCount?: number; status?: number },
+  ) {
     return this.prisma.novelChapter.update({ where: { id }, data });
   }
 

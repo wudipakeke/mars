@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Req, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  Req,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { NovelService } from './novel.service';
 import type { Request } from 'express';
@@ -21,7 +32,10 @@ export class NovelController {
   }
 
   @Post()
-  create(@Req() req: Request, @Body() body: { title: string; genre?: string; description?: string }) {
+  create(
+    @Req() req: Request,
+    @Body() body: { title: string; genre?: string; description?: string },
+  ) {
     const user = req.user as JwtPayload;
     return this.service.create(user.openId, body);
   }
@@ -35,7 +49,14 @@ export class NovelController {
   update(
     @Req() req: Request,
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: { title?: string; genre?: string; description?: string; wordCount?: number; status?: number },
+    @Body()
+    body: {
+      title?: string;
+      genre?: string;
+      description?: string;
+      wordCount?: number;
+      status?: number;
+    },
   ) {
     const user = req.user as JwtPayload;
     return this.service.update(BigInt(id), user.openId, body);
@@ -63,7 +84,10 @@ export class NovelController {
       const chapters = await this.service.findChapters(BigInt(novelId));
       order = chapters.length + 1;
     }
-    return this.service.createChapter(BigInt(novelId), { title: body.title, chapterOrder: order });
+    return this.service.createChapter(BigInt(novelId), {
+      title: body.title,
+      chapterOrder: order,
+    });
   }
 
   @Put('chapters/:chapterId')

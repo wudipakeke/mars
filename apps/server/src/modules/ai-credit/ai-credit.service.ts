@@ -11,7 +11,9 @@ export class AiCreditService {
 
   // ---- Balance ----
   async getBalance(openId: string) {
-    const credit = await this.prisma.userCredit.findUnique({ where: { openId } });
+    const credit = await this.prisma.userCredit.findUnique({
+      where: { openId },
+    });
     return { balance: credit?.balance ?? 0 };
   }
 
@@ -25,7 +27,9 @@ export class AiCreditService {
 
   // ---- Purchase ----
   async purchase(openId: string, packageId: bigint) {
-    const pkg = await this.prisma.creditPackage.findUnique({ where: { id: packageId } });
+    const pkg = await this.prisma.creditPackage.findUnique({
+      where: { id: packageId },
+    });
     if (!pkg) throw new HttpException('套餐不存在', HttpStatus.NOT_FOUND);
 
     const order = await this.prisma.creditOrder.create({
@@ -41,7 +45,9 @@ export class AiCreditService {
   }
 
   async pay(openId: string, orderId: bigint) {
-    const order = await this.prisma.creditOrder.findUnique({ where: { id: orderId } });
+    const order = await this.prisma.creditOrder.findUnique({
+      where: { id: orderId },
+    });
     if (!order || order.openId !== openId) {
       throw new HttpException('订单不存在', HttpStatus.NOT_FOUND);
     }
@@ -49,7 +55,7 @@ export class AiCreditService {
       throw new HttpException('订单已处理', HttpStatus.BAD_REQUEST);
     }
 
-    const [updated] = await this.prisma.$transaction([
+    await this.prisma.$transaction([
       this.prisma.creditOrder.update({
         where: { id: orderId },
         data: { status: 1, paidAt: new Date() },
@@ -57,11 +63,16 @@ export class AiCreditService {
       this.prisma.userCredit.upsert({
         where: { openId },
         create: { openId, balance: order.points, totalEarned: order.points },
-        update: { balance: { increment: order.points }, totalEarned: { increment: order.points } },
+        update: {
+          balance: { increment: order.points },
+          totalEarned: { increment: order.points },
+        },
       }),
     ]);
 
-    const credit = await this.prisma.userCredit.findUnique({ where: { openId } });
+    const credit = await this.prisma.userCredit.findUnique({
+      where: { openId },
+    });
     return { balance: credit?.balance ?? 0 };
   }
 
@@ -88,7 +99,9 @@ export class AiCreditService {
     const maxTokens = model?.maxTokens ?? 2048;
 
     // 2. Check balance
-    const credit = await this.prisma.userCredit.findUnique({ where: { openId } });
+    const credit = await this.prisma.userCredit.findUnique({
+      where: { openId },
+    });
     const balance = credit?.balance ?? 0;
     if (balance < costPerCall) {
       throw new HttpException(
@@ -110,7 +123,10 @@ export class AiCreditService {
       const updatedCredit = await this.prisma.$transaction(async (tx) => {
         const uc = await tx.userCredit.update({
           where: { openId },
-          data: { balance: { decrement: costPerCall }, totalSpent: { increment: costPerCall } },
+          data: {
+            balance: { decrement: costPerCall },
+            totalSpent: { increment: costPerCall },
+          },
         });
         await tx.creditUsageLog.create({
           data: {
@@ -119,7 +135,10 @@ export class AiCreditService {
             balanceAfter: uc.balance,
             action: 'ai_completion',
             refId: result.id,
-            metadata: JSON.stringify({ model: modelKey, promptTokens: result.usage?.prompt_tokens }),
+            metadata: JSON.stringify({
+              model: modelKey,
+              promptTokens: result.usage?.prompt_tokens,
+            }),
           },
         });
         return uc;
@@ -135,10 +154,13 @@ export class AiCreditService {
           totalTokens: result.usage?.total_tokens ?? 0,
         },
       };
-    } catch (err: any) {
+    } catch (err: unknown) {
       // If DeepSeek fails, refund the deduction
-      if (err.message?.includes('DeepSeek')) {
-        throw new HttpException('AI 服务暂时不可用，请稍后重试', HttpStatus.SERVICE_UNAVAILABLE);
+      if ((err as Error)?.message?.includes('DeepSeek')) {
+        throw new HttpException(
+          'AI 服务暂时不可用，请稍后重试',
+          HttpStatus.SERVICE_UNAVAILABLE,
+        );
       }
       throw err;
     }
