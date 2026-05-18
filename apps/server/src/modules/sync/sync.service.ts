@@ -38,14 +38,16 @@ export class SyncService {
     });
   }
 
-  async download(openId: string): Promise<{ syncedAt: Date; data: SyncDataPayload } | null> {
+  async download(
+    openId: string,
+  ): Promise<{ syncedAt: Date; data: SyncDataPayload } | null> {
     const record = await this.prisma.userDataSync.findUnique({
       where: { openId },
     });
     if (!record) return null;
     return {
       syncedAt: record.syncedAt,
-      data: JSON.parse(record.syncData),
+      data: JSON.parse(record.syncData) as SyncDataPayload,
     };
   }
 }

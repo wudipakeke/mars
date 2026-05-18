@@ -1,13 +1,6 @@
-import {
-  Controller,
-  Post,
-  Get,
-  Req,
-  Body,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Get, Req, Body, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { SyncService } from './sync.service';
+import { SyncService, type SyncDataPayload } from './sync.service';
 import type { Request } from 'express';
 
 interface JwtPayload {
@@ -22,7 +15,7 @@ export class SyncController {
   constructor(private readonly service: SyncService) {}
 
   @Post('upload')
-  async upload(@Req() req: Request, @Body() body: { data: any }) {
+  async upload(@Req() req: Request, @Body() body: { data: SyncDataPayload }) {
     const user = req.user as JwtPayload;
     await this.service.upload(user.openId, body.data);
     return { code: 0, data: null, message: 'ok' };
