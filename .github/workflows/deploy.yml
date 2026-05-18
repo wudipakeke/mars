@@ -125,7 +125,7 @@ jobs:
         run: |
           echo "=== Health check: Mars Server ==="
           for i in $(seq 1 12); do
-            if curl -sf http://localhost:3000/api/business > /dev/null 2>&1; then
+            if curl -sf http://localhost:9261/api/business > /dev/null 2>&1; then
               echo "Mars Server OK"
               exit 0
             fi
@@ -168,7 +168,7 @@ jobs:
         run: |
           echo "=== Health check: Mars Web ==="
           for i in $(seq 1 12); do
-            if curl -sf http://localhost:3000/ > /dev/null 2>&1; then
+            if curl -sf http://localhost:9262/ > /dev/null 2>&1; then
               echo "Mars Web OK"
               exit 0
             fi
