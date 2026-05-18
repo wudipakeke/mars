@@ -5,6 +5,7 @@ import { BusinessModule } from './modules/business/business.module';
 import { CronConfigModule } from './modules/cron-config/cron-config.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { NovelModule } from './modules/novel/novel.module';
+import { SyncModule } from './modules/sync/sync.module';
 import { AiCreditModule } from './modules/ai-credit/ai-credit.module';
 
 @Module({
@@ -15,6 +16,7 @@ import { AiCreditModule } from './modules/ai-credit/ai-credit.module';
     CronConfigModule,
     AuthModule,
     NovelModule,
+    SyncModule,
     AiCreditModule,
   ],
 })

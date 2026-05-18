@@ -161,3 +161,17 @@ model AiModelConfig {
   @@map("ai_model_configs")
 }
 
+// ============================================================
+// User Data Sync (full snapshot stored as JSON)
+// ============================================================
+
+model UserDataSync {
+  id        BigInt   @id @default(autoincrement())
+  openId    String   @unique @map("open_id") @db.VarChar(255)
+  syncData  String   @map("sync_data") @db.MediumText
+  syncedAt  DateTime @default(now()) @map("synced_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("user_data_sync")
+}
+
