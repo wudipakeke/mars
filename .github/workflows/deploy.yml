@@ -5,8 +5,11 @@ on:
     branches:
       - main
     paths:
-      - 'apps/server/package.json'
-      - 'apps/web/package.json'
+      - 'apps/server/**'
+      - 'apps/web/**'
+      - 'docker/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
   workflow_dispatch:
     inputs:
       target:
