@@ -12,10 +12,13 @@ RUN pnpm --filter @mars/server build
 FROM node:20-bookworm-slim
 RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
-COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
-COPY --from=builder /app/apps/server/ ./apps/server/
-COPY --from=builder /app/packages/shared/ ./packages/shared/
-RUN corepack enable && pnpm install --frozen-lockfile
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/server/package.json apps/server/
+COPY packages/shared/package.json packages/shared/
+COPY --from=builder /app/apps/server/dist ./apps/server/dist
+COPY --from=builder /app/apps/server/prisma ./apps/server/prisma
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+RUN corepack enable && pnpm install --frozen-lockfile --prod
 RUN npx --yes prisma@5.22.0 generate --schema=apps/server/prisma/schema.prisma
 EXPOSE 4000
 CMD ["node", "apps/server/dist/main"]
