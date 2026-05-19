@@ -138,7 +138,10 @@ jobs:
           for i in $(seq 1 12); do
             if curl -sf http://localhost:4000/api/business > /dev/null 2>&1; then
               echo "Mars Server OK"
-              kill $PF_PID
+              # Check if process exists before killing
+              if kill -0 $PF_PID 2>/dev/null; then
+                kill $PF_PID
+              fi
               exit 0
             fi
             echo "Attempt $i/12: not ready yet..."
@@ -146,7 +149,9 @@ jobs:
           done
           
           # Cleanup and fail
-          kill $PF_PID
+          if kill -0 $PF_PID 2>/dev/null; then
+            kill $PF_PID
+          fi
           echo "FAILED: Mars Server did not respond"
           cat /tmp/port-forward.log
           exit 1
@@ -194,7 +199,10 @@ jobs:
           for i in $(seq 1 12); do
             if curl -sf http://localhost:8080/ > /dev/null 2>&1; then
               echo "Mars Web OK"
-              kill $PF_PID
+              # Check if process exists before killing
+              if kill -0 $PF_PID 2>/dev/null; then
+                kill $PF_PID
+              fi
               exit 0
             fi
             echo "Attempt $i/12: not ready yet..."
@@ -202,7 +210,9 @@ jobs:
           done
           
           # Cleanup and fail
-          kill $PF_PID
+          if kill -0 $PF_PID 2>/dev/null; then
+            kill $PF_PID
+          fi
           echo "FAILED: Mars Web did not respond"
           cat /tmp/port-forward-web.log
           exit 1
