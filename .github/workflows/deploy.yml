@@ -127,15 +127,28 @@ jobs:
       - name: Health check
         run: |
           echo "=== Health check: Mars Server ==="
+          # Start port-forward in background
+          kubectl port-forward svc/mars-server -n ${{ env.NAMESPACE }} 4000:4000 > /tmp/port-forward.log 2>&1 &
+          PF_PID=$!
+          
+          # Wait for port-forward to start
+          sleep 5
+          
+          # Health check
           for i in $(seq 1 12); do
-            if curl -sf http://localhost:9261/api/business > /dev/null 2>&1; then
+            if curl -sf http://localhost:4000/api/business > /dev/null 2>&1; then
               echo "Mars Server OK"
+              kill $PF_PID
               exit 0
             fi
             echo "Attempt $i/12: not ready yet..."
             sleep 5
           done
+          
+          # Cleanup and fail
+          kill $PF_PID
           echo "FAILED: Mars Server did not respond"
+          cat /tmp/port-forward.log
           exit 1
 
   # ─── Job 3: 发版前端 ───
@@ -170,15 +183,28 @@ jobs:
       - name: Health check
         run: |
           echo "=== Health check: Mars Web ==="
+          # Start port-forward in background
+          kubectl port-forward svc/mars-web -n ${{ env.NAMESPACE }} 8080:80 > /tmp/port-forward-web.log 2>&1 &
+          PF_PID=$!
+          
+          # Wait for port-forward to start
+          sleep 5
+          
+          # Health check
           for i in $(seq 1 12); do
-            if curl -sf http://localhost:9262/ > /dev/null 2>&1; then
+            if curl -sf http://localhost:8080/ > /dev/null 2>&1; then
               echo "Mars Web OK"
+              kill $PF_PID
               exit 0
             fi
             echo "Attempt $i/12: not ready yet..."
             sleep 5
           done
+          
+          # Cleanup and fail
+          kill $PF_PID
           echo "FAILED: Mars Web did not respond"
+          cat /tmp/port-forward-web.log
           exit 1
 
   # ─── Job 4: 发布总结 + 飞书通知 ───
