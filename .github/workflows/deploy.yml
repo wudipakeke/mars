@@ -127,8 +127,12 @@ jobs:
       - name: Health check
         run: |
           echo "=== Health check: Mars Server ==="
+          # Find an available port
+          PF_PORT=$(python3 -c "import socket; s=socket.socket(); s.bind(('127.0.0.1',0)); print(s.getsockname()[1]); s.close()")
+          echo "Using port $PF_PORT for port-forward"
+          
           # Start port-forward in background
-          kubectl port-forward svc/mars-server -n ${{ env.NAMESPACE }} 4000:4000 > /tmp/port-forward.log 2>&1 &
+          kubectl port-forward svc/mars-server -n ${{ env.NAMESPACE }} ${PF_PORT}:4000 > /tmp/port-forward.log 2>&1 &
           PF_PID=$!
           
           # Wait for port-forward to start
@@ -136,7 +140,7 @@ jobs:
           
           # Health check
           for i in $(seq 1 12); do
-            if curl -sf http://localhost:4000/api/business > /dev/null 2>&1; then
+            if curl -sf http://localhost:${PF_PORT}/api/business > /dev/null 2>&1; then
               echo "Mars Server OK"
               # Check if process exists before killing
               if kill -0 $PF_PID 2>/dev/null; then
@@ -188,8 +192,12 @@ jobs:
       - name: Health check
         run: |
           echo "=== Health check: Mars Web ==="
+          # Find an available port
+          PF_PORT=$(python3 -c "import socket; s=socket.socket(); s.bind(('127.0.0.1',0)); print(s.getsockname()[1]); s.close()")
+          echo "Using port $PF_PORT for port-forward"
+          
           # Start port-forward in background
-          kubectl port-forward svc/mars-web -n ${{ env.NAMESPACE }} 8080:80 > /tmp/port-forward-web.log 2>&1 &
+          kubectl port-forward svc/mars-web -n ${{ env.NAMESPACE }} ${PF_PORT}:80 > /tmp/port-forward-web.log 2>&1 &
           PF_PID=$!
           
           # Wait for port-forward to start
@@ -197,7 +205,7 @@ jobs:
           
           # Health check
           for i in $(seq 1 12); do
-            if curl -sf http://localhost:8080/ > /dev/null 2>&1; then
+            if curl -sf http://localhost:${PF_PORT}/ > /dev/null 2>&1; then
               echo "Mars Web OK"
               # Check if process exists before killing
               if kill -0 $PF_PID 2>/dev/null; then
